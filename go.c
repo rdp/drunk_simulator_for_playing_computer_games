@@ -13,7 +13,44 @@ The value is in milliseconds
 */
 
 
-
+LRESULT CALLBACK LowLevelKeyboardProc( int nCode,
+                                       WPARAM wParam,
+                                       LPARAM lParam)
+{
+ 
+  BOOL fEatKeystroke = FALSE;
+  PKBDLLHOOKSTRUCT p;
+  if (nCode == HC_ACTION)
+  {
+     switch (wParam)
+     {
+        case WM_KEYDOWN:
+        case WM_SYSKEYDOWN:
+        case WM_KEYUP:
+        case WM_SYSKEYUP:
+ 
+           // Get hook struct
+            p = ( PKBDLLHOOKSTRUCT ) lParam;
+           fEatKeystroke = (( p->vkCode == VK_TAB ) &&
+                           (( p->flags & LLKHF_ALTDOWN ) != 0 )) ||
+                           (( p->vkCode == VK_ESCAPE ) &&
+                           (( p->flags & LLKHF_ALTDOWN ) != 0 )) ||
+                           (( p->vkCode == VK_ESCAPE ) &&
+                           (( GetKeyState( VK_CONTROL ) & 0x8000) != 0 ));
+ 
+           // Check whether we have a key
+           if( fEatKeystroke )
+           {
+              MessageBox( 0, "Eating key stroke", "Error", MB_OK );
+              break;
+           }
+     }// End switch
+  }// End if
+ 
+   // Did we trap a key??
+   return( fEatKeystroke ? 1 : CallNextHookEx( NULL, nCode, wParam, lParam ));
+}// End LowLevelKeyboardProc
+ 
 
 
 LRESULT CALLBACK mouseProc (int nCode, WPARAM wParam, LPARAM lParam)
@@ -32,20 +69,26 @@ LRESULT CALLBACK mouseProc (int nCode, WPARAM wParam, LPARAM lParam)
     return out;
 }
 
+// gleaned from http://ntcoder.com/bab/2007/06/12/wh_keyboard_ll/ and http://stackoverflow.com/questions/11180773/setwindowshookex-for-wh-mouse
+
 DWORD WINAPI MyMouseLogger(LPVOID lpParm)
 {
     HINSTANCE hInstance = GetModuleHandle(NULL);
 
-    // here I put WH_MOUSE instead of WH_MOUSE_LL
     hMouseHook = SetWindowsHookEx( WH_MOUSE_LL, mouseProc, hInstance, NULL );
-
+    
+    HHOOK hhkLowLevelKybd  = SetWindowsHookEx( WH_KEYBOARD_LL,
+                                              LowLevelKeyboardProc,
+                                              hInstance,
+                                              0 );
     MSG message;
     while (GetMessage(&message,NULL,0,0)) {
         TranslateMessage( &message );
         DispatchMessage( &message );
     }
-
-    UnhookWindowsHookEx(hMouseHook);
+    
+UnhookWindowsHookEx(hhkLowLevelKybd);
+UnhookWindowsHookEx(hMouseHook);
     return 0;
 }
 
