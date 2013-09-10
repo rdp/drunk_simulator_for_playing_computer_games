@@ -9,13 +9,6 @@ HHOOK hMouseHook;
 int minMillis;
 int maxMillis;
 
-/*
-LowLevelHooksTimeout value in the following registry key:
-HKEY_CURRENT_USER\Control Panel\Desktop
-The value is in milliseconds
-*/
-
-
 LRESULT CALLBACK LowLevelKeyboardProc( int nCode,
                                        WPARAM wParam,
                                        LPARAM lParam)
