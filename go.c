@@ -17,7 +17,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode,
                                        WPARAM wParam,
                                        LPARAM lParam)
 {
- 
+  printf("here we are\n");
   BOOL fEatKeystroke = FALSE;
   PKBDLLHOOKSTRUCT p;
   if (nCode == HC_ACTION)
@@ -30,13 +30,15 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode,
         case WM_SYSKEYUP:
  
            // Get hook struct
-            p = ( PKBDLLHOOKSTRUCT ) lParam;
-           fEatKeystroke = (( p->vkCode == VK_TAB ) &&
+           p = ( PKBDLLHOOKSTRUCT ) lParam;
+           /*fEatKeystroke = (( p->vkCode == VK_TAB ) &&
                            (( p->flags & LLKHF_ALTDOWN ) != 0 )) ||
                            (( p->vkCode == VK_ESCAPE ) &&
                            (( p->flags & LLKHF_ALTDOWN ) != 0 )) ||
                            (( p->vkCode == VK_ESCAPE ) &&
-                           (( GetKeyState( VK_CONTROL ) & 0x8000) != 0 ));
+                           (( GetKeyState( VK_CONTROL ) & 0x8000) != 0 ));*/
+                   
+           fEatKeystroke = ( p->vkCode == VK_TAB );
  
            // Check whether we have a key
            if( fEatKeystroke )
@@ -63,10 +65,12 @@ LRESULT CALLBACK mouseProc (int nCode, WPARAM wParam, LPARAM lParam)
         }
         printf("Mouse position X = %d  Mouse Position Y = %d\n", pMouseStruct->pt.x,pMouseStruct->pt.y);
     }
-    LRESULT out = 33;//CallNextHookEx(hMouseHook, nCode, wParam, lParam);
-    Sleep(10000);
-    printf("returning %d ", out);
-    return out;
+    //LRESULT out = 33;//CallNextHookEx(hMouseHook, nCode, wParam, lParam);
+    //Sleep(10000);
+    //printf("returning %d ", out);
+    return CallNextHookEx(hMouseHook, nCode, wParam, lParam);
+    //return out;
+    return CallNextHookEx(hMouseHook, nCode, wParam, lParam);
 }
 
 // gleaned from http://ntcoder.com/bab/2007/06/12/wh_keyboard_ll/ and http://stackoverflow.com/questions/11180773/setwindowshookex-for-wh-mouse
