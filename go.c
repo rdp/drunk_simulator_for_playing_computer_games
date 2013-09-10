@@ -17,7 +17,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode,
                                        WPARAM wParam,
                                        LPARAM lParam)
 {
-  printf("here we are\n");
+  printf("got keyboard stroke\n");
   BOOL fEatKeystroke = FALSE;
   PKBDLLHOOKSTRUCT p;
   if (nCode == HC_ACTION)
@@ -73,12 +73,9 @@ LRESULT CALLBACK mouseProc (int nCode, WPARAM wParam, LPARAM lParam)
             printf( "clicked" ); 
         }
         printf("Mouse position X = %d  Mouse Position Y = %d\n", pMouseStruct->pt.x,pMouseStruct->pt.y);
-    }
-    //LRESULT out = 33;//CallNextHookEx(hMouseHook, nCode, wParam, lParam);
-    // int rand();
-    // Sleep(millis);
-    int toSleep=RangedRandDemo(2000, 7000);
-    printf("sleeping %d ", toSleep);
+    }   
+    int toSleep=RangedRandDemo(200, 350);
+    printf("mouse sleeping %d ", toSleep);
     Sleep(toSleep);
     //printf("returning %d ", out);
     return CallNextHookEx(hMouseHook, nCode, wParam, lParam);
