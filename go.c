@@ -6,6 +6,9 @@
 
 HHOOK hMouseHook;
 
+int minMillis;
+int maxMillis;
+
 /*
 LowLevelHooksTimeout value in the following registry key:
 HKEY_CURRENT_USER\Control Panel\Desktop
@@ -49,7 +52,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode,
      }// End switch
   }// End if
  
-    int toSleep = RangedRandDemo(200, 350);
+    int toSleep = RangedRandDemo(minMillis, maxMillis);
     printf("kb sleeping %d ", toSleep);
     Sleep(toSleep);
  
@@ -83,7 +86,6 @@ LRESULT CALLBACK mouseProc (int nCode, WPARAM wParam, LPARAM lParam)
     Sleep(toSleep);*/
     //printf("returning %d ", out);
     return CallNextHookEx(hMouseHook, nCode, wParam, lParam);
-    //return out;    
 }
 
 // gleaned from http://ntcoder.com/bab/2007/06/12/wh_keyboard_ll/ and http://stackoverflow.com/questions/11180773/setwindowshookex-for-wh-mouse
@@ -92,20 +94,17 @@ DWORD WINAPI MyMouseLogger(LPVOID lpParm)
 {
     HINSTANCE hInstance = GetModuleHandle(NULL);
 
-    hMouseHook = SetWindowsHookEx( WH_MOUSE_LL, mouseProc, hInstance, NULL );
+    hMouseHook = SetWindowsHookEx( WH_MOUSE_LL, mouseProc, hInstance, NULL );    
+    HHOOK hhkLowLevelKybd  = SetWindowsHookEx( WH_KEYBOARD_LL, LowLevelKeyboardProc,hInstance, 0);
     
-    HHOOK hhkLowLevelKybd  = SetWindowsHookEx( WH_KEYBOARD_LL,
-                                              LowLevelKeyboardProc,
-                                              hInstance,
-                                              0 );
     MSG message;
     while (GetMessage(&message,NULL,0,0)) {
         TranslateMessage( &message );
         DispatchMessage( &message );
     }
     
-UnhookWindowsHookEx(hhkLowLevelKybd);
-UnhookWindowsHookEx(hMouseHook);
+    UnhookWindowsHookEx(hhkLowLevelKybd);
+    UnhookWindowsHookEx(hMouseHook);
     return 0;
 }
 
@@ -113,7 +112,12 @@ int main(int argc, char** argv)
 {
     HANDLE hThread;
     DWORD dwThread;
-
+    if(argc < 3) {
+      printf("syntax is %s min_millis max_millis", argv[0]);
+      exit(1);
+    }
+    minMillis = atoi(argv[1]);
+    maxMillis = atoi(argv[2]);   
     hThread = CreateThread(NULL,NULL,(LPTHREAD_START_ROUTINE)MyMouseLogger, (LPVOID) argv[0], NULL, &dwThread);
     if (hThread)
         return WaitForSingleObject(hThread,INFINITE);
