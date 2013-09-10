@@ -43,8 +43,8 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode,
            // Check whether we have a key
            if( fEatKeystroke )
            {
-              MessageBox( 0, "Eating key stroke", "Error", MB_OK );
-              break;
+              //MessageBox( 0, "Eating key stroke", "Error", MB_OK );
+              //break;
            }
      }// End switch
   }// End if
@@ -54,6 +54,15 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode,
 }// End LowLevelKeyboardProc
  
 
+ 
+int RangedRandDemo( int range_min, int range_max )
+{
+   // Generate random numbers in the half-closed interval
+   // [range_min, range_max). In other words,
+   // range_min <= random number < range_max
+    return (double)rand() / (RAND_MAX + 1) * (range_max - range_min)
+            + range_min;
+}
 
 LRESULT CALLBACK mouseProc (int nCode, WPARAM wParam, LPARAM lParam)
 {
@@ -66,11 +75,14 @@ LRESULT CALLBACK mouseProc (int nCode, WPARAM wParam, LPARAM lParam)
         printf("Mouse position X = %d  Mouse Position Y = %d\n", pMouseStruct->pt.x,pMouseStruct->pt.y);
     }
     //LRESULT out = 33;//CallNextHookEx(hMouseHook, nCode, wParam, lParam);
-    //Sleep(10000);
+    // int rand();
+    // Sleep(millis);
+    int toSleep=RangedRandDemo(2000, 7000);
+    printf("sleeping %d ", toSleep);
+    Sleep(toSleep);
     //printf("returning %d ", out);
     return CallNextHookEx(hMouseHook, nCode, wParam, lParam);
-    //return out;
-    return CallNextHookEx(hMouseHook, nCode, wParam, lParam);
+    //return out;    
 }
 
 // gleaned from http://ntcoder.com/bab/2007/06/12/wh_keyboard_ll/ and http://stackoverflow.com/questions/11180773/setwindowshookex-for-wh-mouse
