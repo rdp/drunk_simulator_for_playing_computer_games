@@ -49,6 +49,10 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode,
      }// End switch
   }// End if
  
+    int toSleep = RangedRandDemo(200, 350);
+    printf("kb sleeping %d ", toSleep);
+    Sleep(toSleep);
+ 
    // Did we trap a key??
    return( fEatKeystroke ? 1 : CallNextHookEx( NULL, nCode, wParam, lParam ));
 }// End LowLevelKeyboardProc
@@ -74,9 +78,9 @@ LRESULT CALLBACK mouseProc (int nCode, WPARAM wParam, LPARAM lParam)
         }
         printf("Mouse position X = %d  Mouse Position Y = %d\n", pMouseStruct->pt.x,pMouseStruct->pt.y);
     }   
-    int toSleep=RangedRandDemo(200, 350);
+    /*int toSleep=RangedRandDemo(200, 350);
     printf("mouse sleeping %d ", toSleep);
-    Sleep(toSleep);
+    Sleep(toSleep);*/
     //printf("returning %d ", out);
     return CallNextHookEx(hMouseHook, nCode, wParam, lParam);
     //return out;    
