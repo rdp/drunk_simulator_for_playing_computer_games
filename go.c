@@ -70,9 +70,9 @@ LRESULT CALLBACK mouseProc (int nCode, WPARAM wParam, LPARAM lParam)
     if (pMouseStruct != NULL){
         if(wParam == WM_LBUTTONDOWN)
         {
-            printf( "clicked" ); 
+            printf( "mouse clicked" ); 
         }
-        printf("Mouse position X = %d  Mouse Position Y = %d\n", pMouseStruct->pt.x,pMouseStruct->pt.y);
+        //printf("Mouse position X = %d  Mouse Position Y = %d\n", pMouseStruct->pt.x,pMouseStruct->pt.y);
     }   
     /*int toSleep=RangedRandDemo(200, 350);
     printf("mouse sleeping %d ", toSleep);
@@ -112,8 +112,11 @@ int main(int argc, char** argv)
     minMillis = atoi(argv[1]);
     maxMillis = atoi(argv[2]);   
     hThread = CreateThread(NULL,NULL,(LPTHREAD_START_ROUTINE)MyMouseLogger, (LPVOID) argv[0], NULL, &dwThread);
-    if (hThread)
-        return WaitForSingleObject(hThread,INFINITE);
+    if (hThread) {
+        printf("hit enter to exit");
+        gets(); // wait for enter key
+        printf("exited\n");
+    }
     else
         return 1;
 
